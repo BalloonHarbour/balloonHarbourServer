@@ -1,4 +1,4 @@
-package balloonHarbourServer.rsa;
+package balloonHarbourServer.cryptography;
 
 import java.math.BigInteger;
 

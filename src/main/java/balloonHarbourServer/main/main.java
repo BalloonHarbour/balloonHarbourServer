@@ -1,13 +1,11 @@
 package balloonHarbourServer.main;
 
 import balloonHarbourServer.db.dbManager;
-import balloonHarbourServer.rsa.RSA;
-import balloonHarbourServer.rsa.RSACredentials;
+import balloonHarbourServer.cryptography.RSA;
+import balloonHarbourServer.cryptography.RSACredentials;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class main {
