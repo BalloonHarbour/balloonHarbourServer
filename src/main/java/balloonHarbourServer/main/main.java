@@ -1,12 +1,16 @@
 package balloonHarbourServer.main;
 
+import balloonHarbourServer.cryptography.ECC;
+import balloonHarbourServer.cryptography.SHA256;
+import balloonHarbourServer.cryptography.methods.Method;
 import balloonHarbourServer.db.dbManager;
-import balloonHarbourServer.cryptography.RSA;
-import balloonHarbourServer.cryptography.RSACredentials;
 
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
+
+import balloonHarbourServer.cryptography.methods.secp256k1;
 
 public class main {
 
@@ -27,19 +31,16 @@ public class main {
         }
         String test = "ahello abcdef ABCDEF";
 
-        RSA rsa = new RSA(512);
+        System.out.println(SHA256.hash(test));
 
-        RSACredentials credentials = rsa.createCredentials();
+        System.out.println("\n\n");
 
-        BigInteger toencrypt = rsa.StringToCipher(test);
-        BigInteger encrypted = rsa.encrypt(toencrypt, credentials);
+        Method enc_method = new secp256k1();
+        ECC ecc = new ECC(enc_method);
 
-        BigInteger todecipher = rsa.decrypt(encrypted, credentials);
-
-        System.out.println(test + ": " + toencrypt);
-        System.out.println(rsa.CipherToString(encrypted) + ": " + encrypted);
-        System.out.println(rsa.CipherToString(todecipher) + ": " + todecipher);
-
+        for (BigInteger b : ecc.genKeys()) {
+            System.out.println(b);
+        }
 
         /*try {
             user_db.getStatement().executeUpdate("INSERT INTO Users (username, password, color) VALUES ('admin', 'test', '#000000')");
