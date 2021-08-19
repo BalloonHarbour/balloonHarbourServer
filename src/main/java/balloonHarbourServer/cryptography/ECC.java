@@ -51,7 +51,7 @@ public class ECC {
         return out;
     }
 
-    private BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
+    public BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
         BigInteger[] res = new BigInteger[2];
         List<Integer> i = new ArrayList<>();
         String[] s = private_key.toString(2).split("");
@@ -75,6 +75,15 @@ public class ECC {
     }
 
     private BigInteger[] point_add(BigInteger[] P1, BigInteger[] P2) {
+
+        if (P1 == null) {
+            return P2;
+        }
+
+        if (P2 == null) {
+            return P1;
+        }
+
         BigInteger P1x = P1[0];
         BigInteger P1y = P1[1];
         BigInteger P2x = P2[0];
@@ -86,15 +95,15 @@ public class ECC {
 
         BigInteger s;
         if (P1x.compareTo(P2x) == 0) {
-            s = ((new BigInteger("3")).multiply(P1x.pow(2)).mod(p).add(a)).mod(p).multiply((P1y.multiply(new BigInteger("2")).modInverse(p))).mod(p);
+            s = (new BigInteger("3").multiply(P1x.pow(2)).add(a)).multiply((P1y.multiply(new BigInteger("2")).modInverse(p))).mod(p);
         } else {
-            s = P2y.subtract(P1y).multiply(P2x.subtract(P1x).modInverse(p)).mod(p);
+            s = P1y.subtract(P2y).multiply(P1x.subtract(P2x).modInverse(p)).mod(p);
         }
 
         BigInteger[] out = new BigInteger[2];
 
-        out[0] = s.pow(2).mod(p).subtract(P1x.multiply(new BigInteger("2"))).mod(p);
-        out[1] = s.multiply(P1x.subtract(out[0])).mod(p).subtract(P1y.multiply(new BigInteger("2"))).mod(p);
+        out[0] = s.pow(2).subtract(P1x).subtract(P2x).mod(p);
+        out[1] = s.multiply(out[0].subtract(P1x)).add(P1y).negate().mod(p);
         return out;
     }
 }

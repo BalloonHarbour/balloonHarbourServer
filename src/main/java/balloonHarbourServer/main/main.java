@@ -1,16 +1,13 @@
 package balloonHarbourServer.main;
 
 import balloonHarbourServer.cryptography.ECC;
-import balloonHarbourServer.cryptography.SHA256;
 import balloonHarbourServer.cryptography.methods.Method;
+import balloonHarbourServer.cryptography.methods.*;
 import balloonHarbourServer.db.dbManager;
 
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
-
-import balloonHarbourServer.cryptography.methods.secp256k1;
 
 public class main {
 
@@ -31,15 +28,38 @@ public class main {
         }
         String test = "ahello abcdef ABCDEF";
 
-        System.out.println(SHA256.hash(test));
+        //System.out.println("\n\n");
+
+        Method enc_method = new secp521r1();
+        ECC ecc1 = new ECC(enc_method);
+        ECC ecc2 = new ECC(enc_method);
+
+        BigInteger[] s1 = ecc1.genKeys();
+        BigInteger[] pub_key_1 = new BigInteger[]{s1[1], s1[2]};
+
+        for (BigInteger b : s1) {
+            System.out.println(b.toString(16));
+        }
 
         System.out.println("\n\n");
 
-        Method enc_method = new secp256k1();
-        ECC ecc = new ECC(enc_method);
+        BigInteger[] s2 = ecc2.genKeys();
+        BigInteger[] pub_key_2 = new BigInteger[]{s2[1], s2[2]};
 
-        for (BigInteger b : ecc.genKeys()) {
-            System.out.println(b);
+        for (BigInteger b : s2) {
+            System.out.println(b.toString(16));
+        }
+
+        System.out.println("\n\n");
+
+        for (BigInteger b : ecc1.point_mult(s1[0], pub_key_2)) {
+            System.out.println(b.toString(16));
+        }
+
+        System.out.println("\n");
+
+        for (BigInteger b : ecc2.point_mult(s2[0], pub_key_1)) {
+            System.out.println(b.toString(16));
         }
 
         /*try {
