@@ -3,9 +3,7 @@ package balloonHarbourServer.cryptography;
 import balloonHarbourServer.cryptography.methods.Method;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ECC {
 
@@ -52,7 +50,7 @@ public class ECC {
     }
 
     public BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
-        BigInteger[] res = new BigInteger[2];
+        BigInteger[] res = null;
         List<Integer> i = new ArrayList<>();
         String[] s = private_key.toString(2).split("");
 
@@ -61,14 +59,10 @@ public class ECC {
         }
 
         for (int j = 0; j < i.size(); j++) {
-            if (j == 0) {
-                res = G;
-            } else {
-                res = point_add(res, res);
+            res = point_add(res, res);
 
-                if (i.get(j) == 1) {
-                    res = point_add(res, G);
-                }
+            if (i.get(j) == 1) {
+                res = point_add(res, G);
             }
         }
         return res;

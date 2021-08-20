@@ -41,6 +41,8 @@ public class User implements Runnable {
     }
 
     private void InterpretMessage(String msg) {
+        System.out.println(msg);
+
         if (msg.length() > 1) {
             switch (msg.substring(0, 2)) {
                 case "li":
