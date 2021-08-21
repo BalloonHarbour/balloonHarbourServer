@@ -1,6 +1,6 @@
 package balloonHarbourServer.cryptography;
 
-import balloonHarbourServer.cryptography.methods.Method;
+import balloonHarbourServer.cryptography.encryptionmethods.EcryptionMethod;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -9,7 +9,7 @@ public class ECC {
 
     BigInteger p, a, b, Gx, Gy, n, h;
 
-    public ECC(Method m) {
+    public ECC(EcryptionMethod m) {
         BigInteger[] cnfg = m.getConfig();
         p = cnfg[0];
         a = cnfg[1];
@@ -41,7 +41,7 @@ public class ECC {
         int len = max.bitLength();
         BigInteger out = new BigInteger(len, r);
 
-        if (out.compareTo(min) > 0) {
+        if (out.compareTo(min) < 0) {
             out = out.add(min);
         } else if (out.compareTo(range) >= 0) {
             out = out.mod(range).add(min);
@@ -54,14 +54,14 @@ public class ECC {
         List<Integer> i = new ArrayList<>();
         String[] s = private_key.toString(2).split("");
 
-        for (int c = 0; c < private_key.toString(2).length(); c++) {
-            i.add(Integer.parseInt(s[c]));
+        for (int j = 0; j < s.length; j++) {
+            i.add(Integer.parseInt(s[j]));
         }
 
-        for (int j = 0; j < i.size(); j++) {
+        for (Integer bit : i) {
             res = point_add(res, res);
 
-            if (i.get(j) == 1) {
+            if (bit == 1) {
                 res = point_add(res, G);
             }
         }
@@ -89,7 +89,7 @@ public class ECC {
 
         BigInteger s;
         if (P1x.compareTo(P2x) == 0) {
-            s = (new BigInteger("3").multiply(P1x.pow(2)).add(a)).multiply((P1y.multiply(new BigInteger("2")).modInverse(p))).mod(p);
+            s = new BigInteger("3").multiply(P1x.pow(2)).add(a).multiply((P1y.multiply(new BigInteger("2")).modInverse(p))).mod(p);
         } else {
             s = P1y.subtract(P2y).multiply(P1x.subtract(P2x).modInverse(p)).mod(p);
         }

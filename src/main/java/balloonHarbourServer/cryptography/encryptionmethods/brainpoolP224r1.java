@@ -1,11 +1,11 @@
-package balloonHarbourServer.cryptography.methods;
+package balloonHarbourServer.cryptography.encryptionmethods;
 
 import balloonHarbourServer.cryptography.hashes.Hash;
 import balloonHarbourServer.cryptography.hashes.SHA256;
 
 import java.math.BigInteger;
 
-public class brainpoolP224r1 implements Method {
+public class brainpoolP224r1 implements EcryptionMethod {
 
     BigInteger p = new BigInteger("d7c134aa264366862a18302575d1d787b09f075797da89f57ec8c0ff", 16);
     BigInteger a = new BigInteger("68a5e62ca9ce6c1c299803a6c1530b514e182ad8b0042a59cad29f43", 16);

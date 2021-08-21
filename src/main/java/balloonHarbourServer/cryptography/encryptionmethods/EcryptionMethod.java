@@ -1,10 +1,10 @@
-package balloonHarbourServer.cryptography.methods;
+package balloonHarbourServer.cryptography.encryptionmethods;
 
 import balloonHarbourServer.cryptography.hashes.Hash;
 
 import java.math.BigInteger;
 
-public interface Method {
+public interface EcryptionMethod {
 
     BigInteger[] getConfig();
 

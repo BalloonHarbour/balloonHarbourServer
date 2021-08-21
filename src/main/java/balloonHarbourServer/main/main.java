@@ -1,8 +1,9 @@
 package balloonHarbourServer.main;
 
 import balloonHarbourServer.cryptography.ECC;
-import balloonHarbourServer.cryptography.methods.Method;
-import balloonHarbourServer.cryptography.methods.*;
+import balloonHarbourServer.cryptography.encryptionmethods.EcryptionMethod;
+import balloonHarbourServer.cryptography.encryptionmethods.*;
+import balloonHarbourServer.cryptography.hashes.*;
 import balloonHarbourServer.db.dbManager;
 
 import java.io.File;
@@ -26,11 +27,18 @@ public class main {
             user_db = new dbManager("jdbc:sqlite:db\\users.db"); // "/db/test.db"
             message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
         }
-        String test = "ahello abcdef ABCDEF";
+        String test = "hello abcdef ABCDEF";
+
+        System.out.println(new BigInteger("be11435322fe1e1d9cc866e090d47277182f7181cff7a0a7671af1cd5067a03d", 16).toString(10));
+        System.out.println(new BigInteger("37613dc20b9949c4ce72584cdc86046f2b9ecbc5be984ffb602e9aea32735aed", 16).toString(10));
+
+        /*System.out.println("huso");
+        Hash sha256 = new SHA256();
+        System.out.println(sha256.hash("huso"));
 
         //System.out.println("\n\n");
 
-        Method enc_method = new secp521r1();
+        EcryptionMethod enc_method = new secp256r1();
         ECC ecc1 = new ECC(enc_method);
         ECC ecc2 = new ECC(enc_method);
 
@@ -60,7 +68,7 @@ public class main {
 
         for (BigInteger b : ecc2.point_mult(s2[0], pub_key_1)) {
             System.out.println(b.toString(16));
-        }
+        }*/
 
         /*try {
             user_db.getStatement().executeUpdate("INSERT INTO Users (username, password, color) VALUES ('admin', 'test', '#000000')");
