@@ -1,13 +1,13 @@
 package balloonHarbourServer.main;
 
+import balloonHarbourServer.cryptography.ECC;
+import balloonHarbourServer.cryptography.encryptionmethods.EcryptionMethod;
+import balloonHarbourServer.cryptography.encryptionmethods.*;
+import balloonHarbourServer.cryptography.hashes.*;
 import balloonHarbourServer.db.dbManager;
-import balloonHarbourServer.rsa.RSA;
-import balloonHarbourServer.rsa.RSACredentials;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class main {
@@ -27,21 +27,48 @@ public class main {
             user_db = new dbManager("jdbc:sqlite:db\\users.db"); // "/db/test.db"
             message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
         }
-        String test = "ahello abcdef ABCDEF";
+        String test = "hello abcdef ABCDEF";
 
-        RSA rsa = new RSA(512);
+        System.out.println(new BigInteger("be11435322fe1e1d9cc866e090d47277182f7181cff7a0a7671af1cd5067a03d", 16).toString(10));
+        System.out.println(new BigInteger("37613dc20b9949c4ce72584cdc86046f2b9ecbc5be984ffb602e9aea32735aed", 16).toString(10));
 
-        RSACredentials credentials = rsa.createCredentials();
+        /*System.out.println("huso");
+        Hash sha256 = new SHA256();
+        System.out.println(sha256.hash("huso"));
 
-        BigInteger toencrypt = rsa.StringToCipher(test);
-        BigInteger encrypted = rsa.encrypt(toencrypt, credentials);
+        //System.out.println("\n\n");
 
-        BigInteger todecipher = rsa.decrypt(encrypted, credentials);
+        EcryptionMethod enc_method = new secp256r1();
+        ECC ecc1 = new ECC(enc_method);
+        ECC ecc2 = new ECC(enc_method);
 
-        System.out.println(test + ": " + toencrypt);
-        System.out.println(rsa.CipherToString(encrypted) + ": " + encrypted);
-        System.out.println(rsa.CipherToString(todecipher) + ": " + todecipher);
+        BigInteger[] s1 = ecc1.genKeys();
+        BigInteger[] pub_key_1 = new BigInteger[]{s1[1], s1[2]};
 
+        for (BigInteger b : s1) {
+            System.out.println(b.toString(16));
+        }
+
+        System.out.println("\n\n");
+
+        BigInteger[] s2 = ecc2.genKeys();
+        BigInteger[] pub_key_2 = new BigInteger[]{s2[1], s2[2]};
+
+        for (BigInteger b : s2) {
+            System.out.println(b.toString(16));
+        }
+
+        System.out.println("\n\n");
+
+        for (BigInteger b : ecc1.point_mult(s1[0], pub_key_2)) {
+            System.out.println(b.toString(16));
+        }
+
+        System.out.println("\n");
+
+        for (BigInteger b : ecc2.point_mult(s2[0], pub_key_1)) {
+            System.out.println(b.toString(16));
+        }*/
 
         /*try {
             user_db.getStatement().executeUpdate("INSERT INTO Users (username, password, color) VALUES ('admin', 'test', '#000000')");

@@ -19,5 +19,17 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.36.0.1</version>
         </dependency>
+
+        <!--<dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bouncycastle-jce-jdk13</artifactId>
+            <version>112</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.virgilsecurity.crypto</groupId>
+            <artifactId>ratchet</artifactId>
+            <version>0.16.0</version>
+        </dependency>
     </dependencies>
 </project>
