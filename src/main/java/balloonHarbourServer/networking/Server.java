@@ -1,21 +1,24 @@
 package balloonHarbourServer.networking;
 
+import balloonHarbourServer.cryptography.ECC;
 import balloonHarbourServer.users.User;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Server implements Runnable {
 
     private int port;
+    private ECC ecc;
     private Thread t = null;
-    public List<User> onlineUsers;
+    public static List<User> onlineUsers = new ArrayList<User>();
 
-    public Server(int port) {
+    public Server(int port, ECC ecc) {
         this.port = port;
+        this.ecc = ecc;
     }
 
     @Override
@@ -26,12 +29,10 @@ public class Server implements Runnable {
 
             while (t.isAlive()) {
                 Socket client = socket.accept();
-                System.out.println("[*] Client connected from (" + socket.getInetAddress() + ")");
+                User u = new User(client, ecc.genKeys());
+                onlineUsers.add(u);
 
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-                BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-                onlineUsers.add(new User(reader, writer, client));
+                System.out.println("[*] Client connected from (" + u.getIP() + ")");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -49,5 +50,14 @@ public class Server implements Runnable {
         if (t != null) {
             t.stop();
         }
+    }
+
+    public static User getUserByName(String username) {
+        for (User u : Server.onlineUsers) {
+            if (u.username.equals(username)) {
+                return u;
+            }
+        }
+        return null;
     }
 }

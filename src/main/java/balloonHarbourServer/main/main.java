@@ -1,13 +1,14 @@
 package balloonHarbourServer.main;
 
 import balloonHarbourServer.cryptography.ECC;
-import balloonHarbourServer.cryptography.encryptionmethods.EcryptionMethod;
 import balloonHarbourServer.cryptography.encryptionmethods.*;
-import balloonHarbourServer.cryptography.hashes.*;
 import balloonHarbourServer.db.dbManager;
+import balloonHarbourServer.networking.Server;
+import org.omg.CosNaming.NamingContextPackage.NotEmpty;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class main {
@@ -29,16 +30,22 @@ public class main {
         }
         String test = "hello abcdef ABCDEF";
 
-        System.out.println(new BigInteger("be11435322fe1e1d9cc866e090d47277182f7181cff7a0a7671af1cd5067a03d", 16).toString(10));
-        System.out.println(new BigInteger("37613dc20b9949c4ce72584cdc86046f2b9ecbc5be984ffb602e9aea32735aed", 16).toString(10));
+        EncryptionMethod enc_method = new secp256k1();
+        ECC ecc = new ECC(enc_method);
 
-        /*System.out.println("huso");
-        Hash sha256 = new SHA256();
-        System.out.println(sha256.hash("huso"));
+        Server s = new Server(3000, ecc);
+        s.start();
+
+        //System.out.println("86708036803369872034570412862609083475515593688230928819555281574865911658929: " + new BigInteger("86708036803369872034570412862609083475515593688230928819555281574865911658929", 10).toString(2));
+        //System.out.println("85477233325812616354036193957635600561136467237707362460828001779519353589532: " + new BigInteger("85477233325812616354036193957635600561136467237707362460828001779519353589532", 10).toString(2));
+
+        //System.out.println("huso");
+        //Hash sha256 = new SHA256();
+        //System.out.println(sha256.hash("huso"));
 
         //System.out.println("\n\n");
 
-        EcryptionMethod enc_method = new secp256r1();
+        /*EncryptionMethod enc_method = new secp256r1();
         ECC ecc1 = new ECC(enc_method);
         ECC ecc2 = new ECC(enc_method);
 
@@ -46,7 +53,7 @@ public class main {
         BigInteger[] pub_key_1 = new BigInteger[]{s1[1], s1[2]};
 
         for (BigInteger b : s1) {
-            System.out.println(b.toString(16));
+            System.out.println(b.toString(10));
         }
 
         System.out.println("\n\n");
@@ -55,19 +62,19 @@ public class main {
         BigInteger[] pub_key_2 = new BigInteger[]{s2[1], s2[2]};
 
         for (BigInteger b : s2) {
-            System.out.println(b.toString(16));
+            System.out.println(b.toString(10));
         }
 
         System.out.println("\n\n");
 
         for (BigInteger b : ecc1.point_mult(s1[0], pub_key_2)) {
-            System.out.println(b.toString(16));
+            System.out.println(b.toString(10));
         }
 
         System.out.println("\n");
 
         for (BigInteger b : ecc2.point_mult(s2[0], pub_key_1)) {
-            System.out.println(b.toString(16));
+            System.out.println(b.toString(10));
         }*/
 
         /*try {
@@ -86,9 +93,31 @@ public class main {
         }*/
     }
 
+    public static void ResgisterNewUser(String username, String password) {
+        try {
+            user_db.getStatement().executeUpdate("INSERT INTO Users (username, password) VALUES ('" + username + "', '" + password + "')");
+        } catch (SQLException e) {
+            System.out.printf(e.getMessage());
+        }
+    }
+
+    public static int CheckLogin(String username, String password) {
+        try {
+            ResultSet rs = user_db.getStatement().executeQuery("SELECT password FROM Users WHERE username = '" + username + "'");
+            if (password.equals(rs.getString("password"))) {
+                return 1;
+            }
+            return 0;
+        } catch (SQLException e) {
+            //e.printStackTrace();
+            return 2;
+        }
+    }
+
     private static void Setup() {
         try {
-            user_db.getStatement().executeUpdate("CREATE TABLE Users (username String, password String, color String);");
+            //user_db.getStatement().executeUpdate("CREATE TABLE Users (username String, password String, color String);");
+            user_db.getStatement().executeUpdate("CREATE TABLE Users (username String, password String);");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

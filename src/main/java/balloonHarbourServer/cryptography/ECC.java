@@ -1,15 +1,15 @@
 package balloonHarbourServer.cryptography;
 
-import balloonHarbourServer.cryptography.encryptionmethods.EcryptionMethod;
+import balloonHarbourServer.cryptography.encryptionmethods.EncryptionMethod;
 
 import java.math.BigInteger;
 import java.util.*;
 
 public class ECC {
 
-    BigInteger p, a, b, Gx, Gy, n, h;
+    private static BigInteger p, a, b, Gx, Gy, n, h;
 
-    public ECC(EcryptionMethod m) {
+    public ECC(EncryptionMethod m) {
         BigInteger[] cnfg = m.getConfig();
         p = cnfg[0];
         a = cnfg[1];
@@ -49,7 +49,7 @@ public class ECC {
         return out;
     }
 
-    public BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
+    public static BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
         BigInteger[] res = null;
         List<Integer> i = new ArrayList<>();
         String[] s = private_key.toString(2).split("");
@@ -68,7 +68,7 @@ public class ECC {
         return res;
     }
 
-    private BigInteger[] point_add(BigInteger[] P1, BigInteger[] P2) {
+    private static BigInteger[] point_add(BigInteger[] P1, BigInteger[] P2) {
 
         if (P1 == null) {
             return P2;

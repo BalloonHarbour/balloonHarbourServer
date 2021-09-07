@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class SHA384 implements Hash {
 
-    private static byte[] getSHA(String input) throws NoSuchAlgorithmException {
+    public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-384");
         return md.digest(input.getBytes(StandardCharsets.UTF_8));
     }
@@ -22,8 +22,7 @@ public class SHA384 implements Hash {
         return hexString.toString();
     }
 
-    @Override
-    public String hash(String msg) {
+    public static String hash(String msg) {
         try {
             return toHexString(getSHA(msg));
         } catch (NoSuchAlgorithmException e) {
