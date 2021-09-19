@@ -5,7 +5,7 @@ import balloonHarbourServer.cryptography.hashes.SHA256;
 
 import java.math.BigInteger;
 
-public class secp192r1 implements EcryptionMethod {
+public class secp192r1 implements EncryptionMethod {
 
     BigInteger p = new BigInteger("fffffffffffffffffffffffffffffffeffffffffffffffff", 16);
     BigInteger a = new BigInteger("fffffffffffffffffffffffffffffffefffffffffffffffc", 16);

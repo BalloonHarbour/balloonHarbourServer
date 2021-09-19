@@ -4,7 +4,7 @@ import balloonHarbourServer.cryptography.hashes.Hash;
 
 import java.math.BigInteger;
 
-public interface EcryptionMethod {
+public interface EncryptionMethod {
 
     BigInteger[] getConfig();
 

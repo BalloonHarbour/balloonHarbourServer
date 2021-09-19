@@ -5,7 +5,7 @@ import balloonHarbourServer.cryptography.hashes.SHA256;
 
 import java.math.BigInteger;
 
-public class brainpoolP320r1 implements EcryptionMethod {
+public class brainpoolP320r1 implements EncryptionMethod {
 
     BigInteger p = new BigInteger("d35e472036bc4fb7e13c785ed201e065f98fcfa6f6f40def4f92b9ec7893ec28fcd412b1f1b32e27", 16);
     BigInteger a = new BigInteger("3ee30b568fbab0f883ccebd46d3f3bb8a2a73513f5eb79da66190eb085ffa9f492f375a97d860eb4", 16);

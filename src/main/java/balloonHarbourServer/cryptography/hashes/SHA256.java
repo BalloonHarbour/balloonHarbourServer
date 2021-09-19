@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class SHA256 implements Hash {
 
-    private static byte[] getSHA(String input) throws NoSuchAlgorithmException {
+    public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         return md.digest(input.getBytes(StandardCharsets.UTF_8));
     }
@@ -17,13 +17,12 @@ public class SHA256 implements Hash {
         StringBuilder hexString = new StringBuilder(number.toString(16));
 
         while (hexString.length() < 32) {
-            hexString.insert(0, '0');
+            hexString.insert(0, "0");
         }
         return hexString.toString();
     }
 
-    @Override
-    public String hash(String msg) {
+    public static String hash(String msg) {
         try {
             return toHexString(getSHA(msg));
         } catch (NoSuchAlgorithmException e) {
