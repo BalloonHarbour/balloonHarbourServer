@@ -4,12 +4,16 @@ import balloonHarbourServer.cryptography.ECC;
 import balloonHarbourServer.cryptography.encryptionmethods.*;
 import balloonHarbourServer.db.dbManager;
 import balloonHarbourServer.networking.Server;
+import balloonHarbourServer.users.User;
 import org.omg.CosNaming.NamingContextPackage.NotEmpty;
 
 import java.io.File;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class main {
 
@@ -19,14 +23,14 @@ public class main {
     public static void main(String[] args) {
         File f = new File("db");
 
-        if (!f.exists()) {
+        if (f.exists() && f.isDirectory()) {
+            user_db = new dbManager("jdbc:sqlite:db\\users.db"); // "/db/test.db"
+            message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
+        } else {
             f.mkdir();
             user_db = new dbManager("jdbc:sqlite:db\\users.db"); // "/db/test.db"
             message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
             Setup();
-        } else {
-            user_db = new dbManager("jdbc:sqlite:db\\users.db"); // "/db/test.db"
-            message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
         }
         String test = "hello abcdef ABCDEF";
 
@@ -93,6 +97,32 @@ public class main {
         }*/
     }
 
+    public static List<String> getMessagesFromUser(String username) {
+        try {
+            List<String> msgs = new ArrayList<>();
+            ResultSet rs = message_db.getStatement().executeQuery("SELECT message, sender FROM Messages WHERE username = '" + username + "'");
+
+            while (rs.next()) {
+                String sender = rs.getString("sender");
+                String message = rs.getString("message");
+                msgs.add(User.padRight(sender, 25) + message);
+                //System.out.println(sender + ": " + message);
+            }
+            return msgs;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public static void SaveMessage(String username, String msg, String sender) {
+        try {
+            message_db.getStatement().executeUpdate("INSERT INTO Messages (username, message, sender) VALUES ('" + username + "', '" + msg + "', '" + sender + "')");
+        } catch (SQLException e) {
+            System.out.printf(e.getMessage());
+        }
+    }
+
     public static void ResgisterNewUser(String username, String password) {
         try {
             user_db.getStatement().executeUpdate("INSERT INTO Users (username, password) VALUES ('" + username + "', '" + password + "')");
@@ -118,6 +148,7 @@ public class main {
         try {
             //user_db.getStatement().executeUpdate("CREATE TABLE Users (username String, password String, color String);");
             user_db.getStatement().executeUpdate("CREATE TABLE Users (username String, password String);");
+            message_db.getStatement().executeUpdate("CREATE TABLE Messages (username String, message String, sender String);");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

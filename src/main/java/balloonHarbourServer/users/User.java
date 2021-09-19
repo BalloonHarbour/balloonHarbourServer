@@ -1,8 +1,7 @@
 package balloonHarbourServer.users;
 
-import balloonHarbourServer.cryptography.AES;
 import balloonHarbourServer.cryptography.ECC;
-import balloonHarbourServer.cryptography.hashes.Hash;
+import balloonHarbourServer.cryptography.aes.Aes;
 import balloonHarbourServer.cryptography.hashes.SHA256;
 import balloonHarbourServer.main.main;
 import balloonHarbourServer.networking.Server;
@@ -12,19 +11,23 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.List;
 
 public class User implements Runnable {
 
-    public String username, color;
+    public String username, color, enc_key;
     private Socket s;
     private Thread t;
     private boolean isKeys = true;
     private BigInteger[] keys;
     private BigInteger[] shared_secret;
     private OutputStreamWriter writer;
-    private byte[] enc_key;
+    //private byte[] enc_key;
     private boolean isLoggedIn = false;
     private boolean isRegisteredYet = true;
+    private boolean isUpdated = false;
 
     public User(Socket s, BigInteger[] keys) {
         this.s = s;
@@ -38,6 +41,7 @@ public class User implements Runnable {
     public void run() {
         try {
             writer = new OutputStreamWriter(s.getOutputStream(), Charset.forName("UTF-8").newEncoder());
+            //writer = new OutputStreamWriter(s.getOutputStream(), new UnicodeEncoding);
             Write(keys[1].toString(16) + "/" + keys[2].toString(16));
             int chr;
 
@@ -54,6 +58,12 @@ public class User implements Runnable {
                         s.getInputStream().read(buffer);
                     }
                     InterpretMessage((char) chr + new String(buffer));
+
+                    //Test
+                    System.out.println((char) chr + ": " + chr);
+                    for (byte b : buffer) {
+                        System.out.println((char) b + ": " + (int) b);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -62,16 +72,21 @@ public class User implements Runnable {
     }
 
     private void InterpretMessage(String msg) {
+        msg = new String(Base64.getDecoder().decode(msg), StandardCharsets.UTF_8);
         if (!isKeys) {
             try {
-                enc_key = SHA256.getSHA(shared_secret[0].toString(16));
+                enc_key = SHA256.hash(shared_secret[0].toString(16));
+                for (int i = 0; i < msg.length(); i++) {
+                    System.out.println(msg.charAt(i) + ": " + (int) msg.charAt(i));
+                }
                 //System.out.println("enc_key: " + SHA256.hash(shared_secret[0].toString(16)) + " (" + shared_secret[0].toString(16) + ")");
             } catch (Exception e) {
 
             }
             //System.out.println("shared secret: " + enc_key);
-            //msg = AES.decrypt(msg, enc_key);                      ------ Test
-            //System.out.println(msg); //Testing                    ------ Test
+            System.out.println(msg);
+            msg = Aes.decryptText(msg, enc_key, true);
+            System.out.println(msg + "\n" + enc_key); //Testing                    ------ Test
             //Write(msg);                                           ------ Test
 
             if (!isLoggedIn && isRegisteredYet) {
@@ -84,6 +99,15 @@ public class User implements Runnable {
                         case 1:
                             System.out.println("[+] Logged in");
                             Write("sc");
+
+                            List<String> msgs = main.getMessagesFromUser(username);
+                            if (msgs != null) {
+                                for (String s : msgs) {
+                                    //System.out.println("tester: " + sender + ": " + msgs.get(sender));
+                                    Write("ms" + s);
+                                    System.out.println(s);
+                                }
+                            }
                             this.username = username;
                             isLoggedIn = true;
                             break;
@@ -128,6 +152,7 @@ public class User implements Runnable {
                         if ((u = Server.getUserByName(username)) != null) {
                             u.Write("ms" + padRight(this.username, 25) + message);
                         } else {
+                            main.SaveMessage(username, message, this.username);
                             System.out.println(username + " is not online to receive message: " + message);
                         }
                         break;
@@ -149,13 +174,13 @@ public class User implements Runnable {
     public void Write(String msg) {
         try {
             if (!isKeys) {
-                enc_key = SHA256.getSHA(shared_secret[0].toString(16));
+                enc_key = SHA256.hash(shared_secret[0].toString(16));
                 //System.out.println("enc_key: " + SHA256.hash(shared_secret[0].toString(16)));
                 //System.out.println("shared secret: " + enc_key);
-                //msg = AES.encrypt(msg, enc_key);                  ------ Test
+                msg = Aes.encryptText(msg, enc_key, true);
                 //System.out.println("msg: " + msg);
             }
-            char[] chars = msg.toCharArray();
+            char[] chars = new String(Base64.getEncoder().encode(msg.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8).toCharArray();
             writer.write(chars, 0, chars.length);
             writer.flush();
             /*byte[] chars = msg.getBytes(StandardCharsets.US_ASCII);
@@ -185,5 +210,16 @@ public class User implements Runnable {
 
     public static String padRight(String s, int n) {
         return String.format("%-" + n + "s", s);
+    }
+
+    public void UpdateMessages() {
+        List<String> msgs = main.getMessagesFromUser(username);
+        if (msgs != null) {
+            for (String msg : msgs) {
+                //System.out.println("tester: " + sender + ": " + msgs.get(sender));
+                Write("ms" + msg);
+                System.out.println(msg);
+            }
+        }
     }
 }
