@@ -4,22 +4,22 @@ public class Aes {
 
     private static Key keys;
 
-    public static String encryptText(String text, String cipherKey, boolean unicodeKey) {
+    public static byte[] encryptText(byte[] input, String cipherKey, boolean unicodeKey) {
         keys = new Key(cipherKey, unicodeKey);
-        State[] stateBlock = AesParser.getStateBlocks(text);
+        State[] stateBlock = AesParser.getStateBlocks(input);
         for (State state : stateBlock) {
             encryptState(state);
         }
-        return AesParser.getStringFromState(stateBlock);
+        return AesParser.getBytesFromState(stateBlock);
     }
 
-    public static String decryptText(String text, String cipherKey, boolean unicodeKey) {
+    public static byte[] decryptText(byte[] input, String cipherKey, boolean unicodeKey) {
         keys = new Key(cipherKey, unicodeKey);
-        State[] stateBlock = AesParser.getStateBlocks(text);
+        State[] stateBlock = AesParser.getStateBlocks(input);
         for (State state : stateBlock) {
             decryptState(state);
         }
-        return AesParser.getStringFromState(stateBlock);
+        return AesParser.getBytesFromState(stateBlock);
     }
 
     private static void encryptState(State state) {
@@ -62,19 +62,19 @@ public class Aes {
     }
 
     private static void mixColumns(State s) {
-        WordPoly other = new WordPoly(0x02, 0x01, 0x01, 0x03); //fixed polynomial
+        WordPoly other = new WordPoly(0x02, 0x01, 0x01, 0x03);
         for (int i = 0; i < 4; i++) {
             WordPoly word = s.collumnAsWord(i);
-            WordPoly mixedWord = word.multiply(other); //multiply modulo x^4 + 1
+            WordPoly mixedWord = word.multiply(other);
             s.wordToCollumn(mixedWord, i);
         }
     }
 
     private static void invMixColumns(State s) {
-        WordPoly other = new WordPoly(0x0e, 0x09, 0x0d, 0x0b); //fixed polynomial
+        WordPoly other = new WordPoly(0x0e, 0x09, 0x0d, 0x0b);
         for (int i = 0; i < 4; i++) {
             WordPoly word = s.collumnAsWord(i);
-            WordPoly mixedWord = word.multiply(other); //multiply modulo x^4 + 1
+            WordPoly mixedWord = word.multiply(other);
             s.wordToCollumn(mixedWord, i);
         }
     }

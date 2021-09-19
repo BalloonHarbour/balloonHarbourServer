@@ -94,9 +94,6 @@ public class Key {
                 Nr = 14;
                 Nk = 8;
                 break;
-            default:
-                System.out.println("false length: " + cipherKeyLenght);
-                break;
         }
     }
 }
