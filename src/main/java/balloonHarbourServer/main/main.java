@@ -2,11 +2,14 @@ package balloonHarbourServer.main;
 
 import balloonHarbourServer.cryptography.ECC;
 import balloonHarbourServer.cryptography.encryptionmethods.*;
+import balloonHarbourServer.cryptography.hashes.SHA256;
 import balloonHarbourServer.db.dbManager;
 import balloonHarbourServer.networking.Server;
+import balloonHarbourServer.users.Commands;
 import balloonHarbourServer.users.User;
 
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,7 +32,16 @@ public class main {
             message_db = new dbManager("jdbc:sqlite:db\\messages.db"); // "/db/messages.db"
             Setup();
         }
-        String test = "hello abcdef ABCDEF";
+
+        /*try {
+            byte[] hashiger_hash = SHA256.getSHA("bongotestyasalame1234567890abcdef");
+
+            for (byte b : hashiger_hash) {
+                System.out.println((int)b);
+            }
+        } catch (NoSuchAlgorithmException e) {
+
+        }*/
 
         EncryptionMethod enc_method = new secp256k1();
         ECC ecc = new ECC(enc_method);

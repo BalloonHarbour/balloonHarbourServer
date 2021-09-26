@@ -7,7 +7,7 @@ public class Key {
     private int Nk;
     private final int Nb = 4;
 
-    public Key(String cipherKey, boolean unicodeKey) {
+    /*public Key(String cipherKey, boolean unicodeKey) {
         setRoundNumber(cipherKey.length());
         keyExpansion = new WordPoly[Nb * (Nr + 1)];
         if (unicodeKey) {
@@ -41,6 +41,41 @@ public class Key {
             }
             temp = temp.addTo(keyExpansion[i - Nk]);
             keyExpansion[i] = temp;
+        }
+    }*/
+
+    public Key(byte[] key) {
+        if (setRoundNumber(key.length)) {
+            keyExpansion = new WordPoly[Nb * (Nr + 1)];
+            for (int i = 0; i < Nk; i++) {
+                WordPoly word = new WordPoly();
+                word.x0 = new BinPoly((int)key[i * 4]);
+                word.x1 = new BinPoly((int)key[i * 4 + 1]);
+                word.x2 = new BinPoly((int)key[i * 4 + 2]);
+                word.x3 = new BinPoly((int)key[i * 4 + 3]);
+                keyExpansion[i] = word;
+            }
+        }
+        expand();
+    }
+
+    private void expand() {
+        for (int i = Nk; i < Nb * (Nr + 1); i++) {
+            WordPoly temp = keyExpansion[i - 1];
+            if (i % Nk == 0) {
+                temp = rotWord(temp);
+                temp = subWord(temp);
+                temp = temp.addTo(RCon.getInstance().rcon.get(i / Nk - 1));
+            } else if ((Nk == 8) && (i % 4 == 0)) {
+                temp = subWord(temp);
+            }
+            temp = temp.addTo(keyExpansion[i - Nk]);
+            keyExpansion[i] = temp;
+        }
+
+        //Test
+        for (WordPoly wp : keyExpansion) {
+            System.out.println(wp.x0.poly + " | " + wp.x1.poly + " | " + wp.x2.poly + " | " + wp.x3.poly);
         }
     }
 
@@ -77,23 +112,24 @@ public class Key {
         return result;
     }
 
-    private void setRoundNumber(int cipherKeyLenght) {
+    private boolean setRoundNumber(int cipherKeyLenght) {
         switch (cipherKeyLenght) {
-            case 32:
-            case 8:
+            case 16:
                 Nr = 10;
                 Nk = 4;
                 break;
-            case 48:
-            case 12:
+            case 24:
                 Nr = 12;
                 Nk = 6;
                 break;
-            case 64:
-            case 16:
+            case 32:
                 Nr = 14;
                 Nk = 8;
                 break;
+            default:
+                System.out.println("[-] Wrong Key length (" + cipherKeyLenght + ")");
+                return false;
         }
+        return true;
     }
 }

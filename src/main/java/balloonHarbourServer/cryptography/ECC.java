@@ -49,7 +49,7 @@ public class ECC {
         return out;
     }
 
-    public static BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
+    /*public static BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
         BigInteger[] res = null;
         List<Integer> i = new ArrayList<>();
         String[] s = private_key.toString(2).split("");
@@ -64,6 +64,27 @@ public class ECC {
             if (bit == 1) {
                 res = point_add(res, G);
             }
+        }
+        return res;
+    }*/
+
+    public static BigInteger[] point_mult(BigInteger private_key, BigInteger[] G) {
+        BigInteger[] res = null;
+        int iterations = private_key.bitLength();
+        BigInteger bits = BigInteger.ZERO;
+
+        while (private_key.compareTo(BigInteger.ZERO) != 0) {
+            bits = bits.shiftLeft(1);
+            bits = bits.or(private_key.and(BigInteger.ONE));
+            private_key = private_key.shiftRight(1);
+        }
+
+        for (int i = 0; i < iterations; i++) {
+            res = point_add(res, res);
+            if (bits.and(BigInteger.ONE).compareTo(BigInteger.ONE) == 0) {
+                res = point_add(res, G);
+            }
+            bits = bits.shiftRight(1);
         }
         return res;
     }

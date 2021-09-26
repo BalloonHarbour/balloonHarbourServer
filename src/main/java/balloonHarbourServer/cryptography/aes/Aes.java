@@ -4,8 +4,9 @@ public class Aes {
 
     private static Key keys;
 
-    public static byte[] encryptText(byte[] input, String cipherKey, boolean unicodeKey) {
-        keys = new Key(cipherKey, unicodeKey);
+    public static byte[] encryptText(byte[] input, byte[] cipherKey) {
+        //keys = new Key(cipherKey, unicodeKey);
+        keys = new Key(cipherKey);
         State[] stateBlock = AesParser.getStateBlocks(input);
         for (State state : stateBlock) {
             encryptState(state);
@@ -13,8 +14,9 @@ public class Aes {
         return AesParser.getBytesFromState(stateBlock);
     }
 
-    public static byte[] decryptText(byte[] input, String cipherKey, boolean unicodeKey) {
-        keys = new Key(cipherKey, unicodeKey);
+    public static byte[] decryptText(byte[] input, byte[] cipherKey) {
+        //keys = new Key(cipherKey, unicodeKey);
+        keys = new Key(cipherKey);
         State[] stateBlock = AesParser.getStateBlocks(input);
         for (State state : stateBlock) {
             decryptState(state);
